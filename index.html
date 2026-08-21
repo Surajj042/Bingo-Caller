@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bingo Number Caller</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <h1>Bingo Caller</h1>
+      <p class="remaining">Numbers remaining: <span id="remaining">90</span></p>
+    </header>
+
+    <section class="display-card">
+      <p class="display-label">Current Number</p>
+      <div id="current-number" class="current-number" aria-live="polite">&mdash;</div>
+      <p id="status" class="status" role="status"></p>
+    </section>
+
+    <section class="board-wrap" aria-label="Number board">
+      <div class="board-header">
+        <h2>Number Board</h2>
+        <button id="board-toggle" class="btn-toggle" aria-expanded="true">Hide</button>
+      </div>
+      <div id="board" class="board"></div>
+    </section>
+
+    <section class="history-wrap">
+      <h2>Draw History</h2>
+      <div id="history" class="history"></div>
+    </section>
+
+    <div class="controls">
+      <button id="next-btn" class="btn btn-primary">Generate</button>
+      <button id="reset-btn" class="btn btn-secondary">Reset</button>
+    </div>
+
+    <p class="hint">Shortcuts: Space = generate &middot; R = reset</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
