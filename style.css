@@ -303,8 +303,12 @@ body.board-open .backdrop {
 }
 
 .history .chip {
-  padding: 6px 12px;
-  border-radius: 999px;
+  width: 44px;
+  height: 32px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   font-size: 0.9rem;
