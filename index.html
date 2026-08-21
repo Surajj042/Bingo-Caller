@@ -19,17 +19,38 @@
       <p id="status" class="status" role="status"></p>
     </section>
 
-    <section class="board-wrap" aria-label="Number board">
+    <div id="board-backdrop" class="backdrop"></div>
+
+    <section id="board-panel" class="board-wrap" aria-label="Number board">
       <div class="board-header">
         <h2>Number Board</h2>
-        <button id="board-toggle" class="btn-toggle" aria-expanded="false">Show</button>
+        <button id="board-close" class="btn-close" aria-label="Close number board">&times;</button>
       </div>
-      <div id="board" class="board hidden"></div>
+      <div id="board" class="board"></div>
     </section>
 
-    <section class="history-wrap">
+    <button id="board-fab" class="fab" aria-expanded="false" aria-label="Toggle number board">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <circle cx="5" cy="5" r="2.1" />
+        <circle cx="12" cy="5" r="2.1" />
+        <circle cx="19" cy="5" r="2.1" />
+        <circle cx="5" cy="12" r="2.1" />
+        <circle cx="12" cy="12" r="2.1" />
+        <circle cx="19" cy="12" r="2.1" />
+        <circle cx="5" cy="19" r="2.1" />
+        <circle cx="12" cy="19" r="2.1" />
+        <circle cx="19" cy="19" r="2.1" />
+      </svg>
+    </button>
+
+    <section class="history-wrap history-left" aria-label="Draw history">
       <h2>Draw History</h2>
-      <div id="history" class="history"></div>
+      <div id="history-left" class="history"></div>
+    </section>
+
+    <section class="history-wrap history-right" aria-label="Draw history">
+      <h2>Draw History</h2>
+      <div id="history-right" class="history"></div>
     </section>
 
     <div class="controls">
@@ -37,7 +58,7 @@
       <button id="reset-btn" class="btn btn-secondary">Reset</button>
     </div>
 
-    <p class="hint">Shortcuts: Space = generate &middot; R = reset</p>
+    <p class="hint">Space = generate &middot; R = reset &middot; or tap the ball</p>
   </main>
 
   <script src="script.js"></script>

@@ -4,12 +4,17 @@ const TOTAL_NUMBERS = 90;
 
 const currentNumberEl = document.getElementById("current-number");
 const boardEl = document.getElementById("board");
-const historyEl = document.getElementById("history");
+const historyEls = [
+  document.getElementById("history-left"),
+  document.getElementById("history-right"),
+];
 const remainingEl = document.getElementById("remaining");
 const statusEl = document.getElementById("status");
 const nextBtn = document.getElementById("next-btn");
 const resetBtn = document.getElementById("reset-btn");
-const boardToggleBtn = document.getElementById("board-toggle");
+const boardFab = document.getElementById("board-fab");
+const boardBackdrop = document.getElementById("board-backdrop");
+const boardCloseBtn = document.getElementById("board-close");
 
 let shuffled = [];
 let drawnCount = 0;
@@ -62,15 +67,18 @@ function drawNext() {
   currentNumberEl.textContent = number;
   currentNumberEl.classList.add("pop");
 
-  const chip = document.createElement("span");
-  chip.className = "chip";
-  chip.textContent = number;
-  historyEl.prepend(chip);
+  for (const el of historyEls) {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = number;
+    el.prepend(chip);
+  }
 
   updateRemaining();
 
   if (isGameOver()) {
     nextBtn.disabled = true;
+    currentNumberEl.classList.add("finished");
     statusEl.textContent = "All Numbers Drawn!";
   }
 }
@@ -85,9 +93,10 @@ function resetGame() {
   });
 
   currentNumberEl.classList.remove("pop");
+  currentNumberEl.classList.remove("finished");
   currentNumberEl.textContent = "\u2014";
 
-  historyEl.replaceChildren();
+  historyEls.forEach((el) => el.replaceChildren());
   statusEl.textContent = "";
   updateRemaining();
 
@@ -112,18 +121,27 @@ document.addEventListener("keydown", (event) => {
     !event.ctrlKey && !event.metaKey && !event.altKey
   ) {
     resetGame();
+  } else if (event.key === "Escape") {
+    setBoardOpen(false);
   }
 });
 
-function toggleBoard() {
-  const hidden = boardEl.classList.toggle("hidden");
-  boardToggleBtn.textContent = hidden ? "Show" : "Hide";
-  boardToggleBtn.setAttribute("aria-expanded", String(!hidden));
+function isBoardOpen() {
+  return document.body.classList.contains("board-open");
+}
+
+function setBoardOpen(open) {
+  document.body.classList.toggle("board-open", open);
+  boardFab.setAttribute("aria-expanded", String(open));
 }
 
 nextBtn.addEventListener("click", drawNext);
 resetBtn.addEventListener("click", resetGame);
-boardToggleBtn.addEventListener("click", toggleBoard);
+currentNumberEl.addEventListener("click", drawNext);
+
+boardFab.addEventListener("click", () => setBoardOpen(!isBoardOpen()));
+boardCloseBtn.addEventListener("click", () => setBoardOpen(false));
+boardBackdrop.addEventListener("click", () => setBoardOpen(false));
 
 buildBoard();
 resetGame();
