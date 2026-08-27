@@ -43,6 +43,104 @@
       </svg>
     </button>
 
+    <button id="settings-btn" class="settings-btn" aria-expanded="false" aria-label="Open settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    </button>
+
+    <div id="settings-backdrop" class="backdrop"></div>
+
+    <section id="settings-panel" class="board-wrap settings-wrap" aria-label="Settings">
+      <div class="board-header">
+        <h2>Settings</h2>
+        <button id="settings-close" class="btn-close" aria-label="Close settings">&times;</button>
+      </div>
+      <div class="settings-body">
+        <div class="setting-row">
+          <div class="setting-name">
+            <span>Spin effect</span>
+            <small>Animate and play sound before revealing the number</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="spin-toggle" />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div id="spin-options" class="hidden">
+          <div id="duration-row" class="setting-row setting-slider">
+            <div class="setting-name">
+              <span>Spin duration</span>
+              <small>Ramps from min to max as more numbers are drawn</small>
+            </div>
+            <div class="slider-field">
+              <label for="min-duration">Min</label>
+              <span id="min-value" class="setting-value">5s</span>
+              <input type="range" id="min-duration" min="1" max="30" step="1" />
+            </div>
+            <div class="slider-field">
+              <label for="max-duration">Max</label>
+              <span id="max-value" class="setting-value">30s</span>
+              <input type="range" id="max-duration" min="1" max="120" step="1" />
+            </div>
+          </div>
+          <div class="setting-row setting-select">
+            <div class="setting-name">
+              <span>Animation style</span>
+              <small>How the ball animates while generating</small>
+            </div>
+            <div class="select" id="effect-select" data-option="reel">
+              <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Animation style">
+                <span class="select-value">Slot reel</span>
+                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              <ul class="select-menu" role="listbox">
+                <li role="option" data-value="numbers" tabindex="-1">Numbers</li>
+                <li role="option" data-value="tumble" tabindex="-1">Tumble</li>
+                <li role="option" data-value="glow" tabindex="-1">Glow pulse</li>
+                <li role="option" data-value="reel" tabindex="-1">Slot reel</li>
+                <li role="option" data-value="bounce" tabindex="-1">Bounce</li>
+                <li role="option" data-value="shake" tabindex="-1">Shake</li>
+                <li role="option" data-value="blur" tabindex="-1">Blur pulse</li>
+                <li role="option" data-value="spin" tabindex="-1">Twin-spin</li>
+                <li role="option" data-value="random" tabindex="-1">Random</li>
+                <li role="option" data-value="none" tabindex="-1">No animation</li>
+              </ul>
+            </div>
+          </div>
+          <div class="setting-row setting-select">
+            <div class="setting-name">
+              <span>Spin sound</span>
+              <small>Sound played during the spin</small>
+            </div>
+            <div class="select" id="sound-select" data-option="ticks">
+              <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Spin sound">
+                <span class="select-value">Ticks only</span>
+                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              <ul class="select-menu" role="listbox">
+                <li role="option" data-value="rumble" tabindex="-1">Rumble</li>
+                <li role="option" data-value="quiet" tabindex="-1">Quiet rumble</li>
+                <li role="option" data-value="sweep" tabindex="-1">Sweep</li>
+                <li role="option" data-value="ticks" tabindex="-1">Ticks only</li>
+                <li role="option" data-value="whoosh" tabindex="-1">Whoosh</li>
+                <li role="option" data-value="engine" tabindex="-1">Engine</li>
+                <li role="option" data-value="pulse" tabindex="-1">Pulse</li>
+                <li role="option" data-value="surges" tabindex="-1">Surges</li>
+                <li role="option" data-value="random" tabindex="-1">Random</li>
+                <li role="option" data-value="none" tabindex="-1">No sound</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="history-wrap history-left" aria-label="Draw history">
       <h2>Draw History</h2>
       <div id="history-left" class="history"></div>
@@ -60,6 +158,10 @@
 
     <p class="hint">Space = generate &middot; R = reset &middot; or tap the ball</p>
   </main>
+
+  <div id="select-layer" class="select-layer">
+    <ul class="select-layer-menu" role="listbox"></ul>
+  </div>
 
   <script src="script.js"></script>
 </body>
