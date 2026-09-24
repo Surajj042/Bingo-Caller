@@ -18,6 +18,7 @@ const boardCloseBtn = document.getElementById("board-close");
 const settingsBtn = document.getElementById("settings-btn");
 const settingsBackdrop = document.getElementById("settings-backdrop");
 const settingsCloseBtn = document.getElementById("settings-close");
+const fullscreenBtn = document.getElementById("fullscreen-btn");
 const spinToggle = document.getElementById("spin-toggle");
 const spinOptions = document.getElementById("spin-options");
 const durationRow = document.getElementById("duration-row");
@@ -27,6 +28,8 @@ const minValueEl = document.getElementById("min-value");
 const maxValueEl = document.getElementById("max-value");
 const effectSelect = document.getElementById("effect-select");
 const soundSelect = document.getElementById("sound-select");
+const themeSelect = document.getElementById("theme-select");
+const fontSelect = document.getElementById("font-select");
 const selectLayer = document.getElementById("select-layer");
 const layerMenu = selectLayer.querySelector(".select-layer-menu");
 
@@ -37,6 +40,8 @@ const DEFAULT_SETTINGS = {
   maxDuration: 30,
   spinEffect: "reel",
   spinSound: "ticks",
+  theme: "ocean",
+  font: "system",
 };
 const SPIN_EFFECTS = [
   "numbers",
@@ -68,6 +73,22 @@ const EFFECT_CHOICES = SPIN_EFFECTS.filter(
 const SOUND_CHOICES = SPIN_SOUNDS.filter(
   (sound) => sound !== "random" && sound !== "none"
 );
+const THEMES = [
+  "ocean",
+  "crimson",
+  "emerald",
+  "amethyst",
+  "sunset",
+  "slate",
+];
+const FONTS = [
+  "system",
+  "orbitron",
+  "righteous",
+  "fredoka",
+  "bebas",
+  "silkscreen",
+];
 
 function loadSettings() {
   try {
@@ -79,6 +100,12 @@ function loadSettings() {
       }
       if (!SPIN_SOUNDS.includes(parsed.spinSound)) {
         parsed.spinSound = DEFAULT_SETTINGS.spinSound;
+      }
+      if (!THEMES.includes(parsed.theme)) {
+        parsed.theme = DEFAULT_SETTINGS.theme;
+      }
+      if (!FONTS.includes(parsed.font)) {
+        parsed.font = DEFAULT_SETTINGS.font;
       }
       return parsed;
     }
@@ -572,6 +599,12 @@ document.addEventListener("keydown", (event) => {
     !event.ctrlKey && !event.metaKey && !event.altKey
   ) {
     resetGame();
+  } else if (
+    (event.key === "f" || event.key === "F") &&
+    !event.ctrlKey && !event.metaKey && !event.altKey
+  ) {
+    event.preventDefault();
+    toggleFullscreen();
   } else if (event.key === "Escape") {
     setBoardOpen(false);
     setSettingsOpen(false);
@@ -583,6 +616,7 @@ function isBoardOpen() {
 }
 
 function setBoardOpen(open) {
+  if (open && document.body.classList.contains("presenting")) return;
   document.body.classList.toggle("board-open", open);
   boardFab.setAttribute("aria-expanded", String(open));
 }
@@ -592,10 +626,73 @@ function isSettingsOpen() {
 }
 
 function setSettingsOpen(open) {
+  if (open && document.body.classList.contains("presenting")) return;
   document.body.classList.toggle("settings-open", open);
   settingsBtn.setAttribute("aria-expanded", String(open));
   if (!open) closeAllSelects();
 }
+
+const fullscreenElementFn = () =>
+  document.fullscreenElement || document.webkitFullscreenElement;
+
+const canFullscreen = Boolean(
+  document.documentElement.requestFullscreen ||
+    document.documentElement.webkitRequestFullscreen
+);
+
+function requestFullscreen() {
+  const el = document.documentElement;
+  if (el.requestFullscreen) return el.requestFullscreen();
+  if (el.webkitRequestFullscreen) {
+    return new Promise((resolve) => el.webkitRequestFullscreen(resolve));
+  }
+  return Promise.reject();
+}
+
+function exitFullscreen() {
+  if (document.exitFullscreen) return document.exitFullscreen();
+  if (document.webkitExitFullscreen) {
+    return new Promise((resolve) => document.webkitExitFullscreen(resolve));
+  }
+  return Promise.reject();
+}
+
+function setPresenting(on) {
+  document.body.classList.toggle("presenting", on);
+  fullscreenBtn.setAttribute("aria-expanded", String(on));
+  fullscreenBtn.setAttribute(
+    "aria-label",
+    on ? "Exit fullscreen" : "Enter fullscreen"
+  );
+  if (on) {
+    setBoardOpen(false);
+    setSettingsOpen(false);
+  }
+}
+
+function toggleFullscreen() {
+  if (fullscreenElementFn()) {
+    exitFullscreen();
+    return;
+  }
+  if (!canFullscreen) {
+    setPresenting(!document.body.classList.contains("presenting"));
+    return;
+  }
+  setPresenting(true);
+  requestFullscreen().catch(() => {
+    if (!fullscreenElementFn()) setPresenting(false);
+  });
+}
+
+function syncFullscreenUi() {
+  setPresenting(Boolean(fullscreenElementFn()));
+}
+
+document.addEventListener("fullscreenchange", syncFullscreenUi);
+document.addEventListener("webkitfullscreenchange", syncFullscreenUi);
+
+fullscreenBtn.addEventListener("click", toggleFullscreen);
 
 function setSelectValue(select, value) {
   select.dataset.option = value;
@@ -647,17 +744,20 @@ function openSelect(select) {
   const trigger = select.querySelector(".select-trigger");
   const rect = trigger.getBoundingClientRect();
 
-  selectLayer.style.left = `${rect.left}px`;
-  selectLayer.style.width = `${rect.width}px`;
+  const zoom = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+  const layoutOffset = 1 / zoom;
+
+  selectLayer.style.left = `${rect.left * layoutOffset}px`;
+  selectLayer.style.width = `${rect.width * layoutOffset}px`;
   selectLayer.classList.add("open");
 
   const menuHeight = layerMenu.offsetHeight;
   const gap = 8;
-  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceBelow = window.innerHeight - rect.bottom * layoutOffset;
   if (spaceBelow >= menuHeight + gap) {
-    selectLayer.style.top = `${rect.bottom + gap}px`;
+    selectLayer.style.top = `${(rect.bottom + gap) * layoutOffset}px`;
   } else {
-    selectLayer.style.top = `${Math.max(gap, rect.top - menuHeight - gap)}px`;
+    selectLayer.style.top = `${Math.max(gap, rect.top * layoutOffset - menuHeight - gap)}px`;
   }
 }
 
@@ -667,6 +767,14 @@ function toggleSelect(select) {
   } else {
     openSelect(select);
   }
+}
+
+function applyTheme() {
+  document.documentElement.dataset.theme = settings.theme;
+}
+
+function applyFont() {
+  document.documentElement.dataset.font = settings.font;
 }
 
 function updateSettingsUI() {
@@ -684,6 +792,8 @@ function updateSettingsUI() {
 
   setSelectValue(effectSelect, settings.spinEffect);
   setSelectValue(soundSelect, settings.spinSound);
+  setSelectValue(themeSelect, settings.theme);
+  setSelectValue(fontSelect, settings.font);
 }
 
 nextBtn.addEventListener("click", drawNext);
@@ -726,8 +836,14 @@ layerMenu.addEventListener("click", (event) => {
   if (!option || !activeSelect) return;
   if (activeSelect.id === "effect-select") {
     settings.spinEffect = option.dataset.value;
-  } else {
+  } else if (activeSelect.id === "sound-select") {
     settings.spinSound = option.dataset.value;
+  } else if (activeSelect.id === "theme-select") {
+    settings.theme = option.dataset.value;
+    applyTheme();
+  } else if (activeSelect.id === "font-select") {
+    settings.font = option.dataset.value;
+    applyFont();
   }
   saveSettings();
   updateSettingsUI();
@@ -754,5 +870,7 @@ window.addEventListener("resize", () => {
 });
 
 buildBoard();
+applyTheme();
+applyFont();
 updateSettingsUI();
 resetGame();

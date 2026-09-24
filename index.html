@@ -4,20 +4,41 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bingo Number Caller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@400;700;800&family=Righteous&family=Silkscreen:wght@400;700&display=swap"
+  />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="app">
     <header class="header">
       <h1>Bingo Caller</h1>
-      <p class="remaining">Numbers remaining: <span id="remaining">90</span></p>
     </header>
 
     <section class="display-card">
       <p class="display-label">Current Number</p>
       <div id="current-number" class="current-number" aria-live="polite">&mdash;</div>
       <p id="status" class="status" role="status"></p>
+      <p class="remaining">Numbers remaining: <span id="remaining">90</span></p>
     </section>
+
+    <button id="fullscreen-btn" class="fs-btn" aria-label="Enter fullscreen" aria-expanded="false">
+      <svg class="fs-icon fs-enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 3 21 3 21 9" />
+        <polyline points="9 21 3 21 3 15" />
+        <line x1="21" y1="3" x2="14" y2="10" />
+        <line x1="3" y1="21" x2="10" y2="14" />
+      </svg>
+      <svg class="fs-icon fs-exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="4 14 10 14 10 20" />
+        <polyline points="20 10 14 10 14 4" />
+        <line x1="14" y1="10" x2="21" y2="3" />
+        <line x1="3" y1="21" x2="10" y2="14" />
+      </svg>
+    </button>
 
     <div id="board-backdrop" class="backdrop"></div>
 
@@ -58,6 +79,50 @@
         <button id="settings-close" class="btn-close" aria-label="Close settings">&times;</button>
       </div>
       <div class="settings-body">
+        <div class="setting-row setting-select">
+          <div class="setting-name">
+            <span>Color theme</span>
+            <small>Overall color scheme of the app</small>
+          </div>
+          <div class="select" id="theme-select" data-option="ocean">
+            <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Color theme">
+              <span class="select-value">Ocean</span>
+              <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <ul class="select-menu" role="listbox">
+              <li role="option" data-value="ocean" tabindex="-1">Ocean</li>
+              <li role="option" data-value="crimson" tabindex="-1">Crimson</li>
+              <li role="option" data-value="emerald" tabindex="-1">Emerald</li>
+              <li role="option" data-value="amethyst" tabindex="-1">Amethyst</li>
+              <li role="option" data-value="sunset" tabindex="-1">Sunset</li>
+              <li role="option" data-value="slate" tabindex="-1">Slate</li>
+            </ul>
+          </div>
+        </div>
+        <div class="setting-row setting-select">
+          <div class="setting-name">
+            <span>Font</span>
+            <small>Typeface used throughout the app</small>
+          </div>
+          <div class="select" id="font-select" data-option="system">
+            <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Font">
+              <span class="select-value">System</span>
+              <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <ul class="select-menu" role="listbox">
+              <li role="option" data-value="system" tabindex="-1">System</li>
+              <li role="option" data-value="orbitron" tabindex="-1">Orbitron</li>
+              <li role="option" data-value="righteous" tabindex="-1">Righteous</li>
+              <li role="option" data-value="fredoka" tabindex="-1">Fredoka</li>
+              <li role="option" data-value="bebas" tabindex="-1">Bebas Neue</li>
+              <li role="option" data-value="silkscreen" tabindex="-1">Silkscreen</li>
+            </ul>
+          </div>
+        </div>
         <div class="setting-row">
           <div class="setting-name">
             <span>Spin effect</span>
@@ -156,7 +221,7 @@
       <button id="reset-btn" class="btn btn-secondary">Reset</button>
     </div>
 
-    <p class="hint">Space = generate &middot; R = reset &middot; or tap the ball</p>
+    <p class="hint">Space = generate &middot; R = reset &middot; F = fullscreen &middot; or tap the ball</p>
   </main>
 
   <div id="select-layer" class="select-layer">
