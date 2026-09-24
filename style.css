@@ -88,6 +88,10 @@
 }
 
 :root,
+:root[data-font="righteous"] {
+  --font-base: "Righteous", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
 :root[data-font="system"] {
   --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -95,10 +99,6 @@
 
 :root[data-font="orbitron"] {
   --font-base: "Orbitron", "Segoe UI", Roboto, Arial, sans-serif;
-}
-
-:root[data-font="righteous"] {
-  --font-base: "Righteous", "Segoe UI", Roboto, Arial, sans-serif;
 }
 
 :root[data-font="fredoka"] {
@@ -113,6 +113,77 @@
   --font-base: "Silkscreen", ui-monospace, "Segoe UI", monospace;
 }
 
+:root[data-font="space-grotesk"] {
+  --font-base: "Space Grotesk", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+:root[data-font="anton"] {
+  --font-base: "Anton", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+:root[data-font="bangers"] {
+  --font-base: "Bangers", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+:root[data-font="press-2p"] {
+  --font-base: "Press Start 2P", ui-monospace, "Segoe UI", monospace;
+}
+
+#font-select .select-value {
+  font-family: var(--font-base);
+}
+
+#font-select .select-menu li[data-value="system"],
+#select-layer [role="option"][data-value="system"] {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+#font-select .select-menu li[data-value="orbitron"],
+#select-layer [role="option"][data-value="orbitron"] {
+  font-family: "Orbitron", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+#font-select .select-menu li[data-value="righteous"],
+#select-layer [role="option"][data-value="righteous"] {
+  font-family: "Righteous", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+#font-select .select-menu li[data-value="fredoka"],
+#select-layer [role="option"][data-value="fredoka"] {
+  font-family: "Fredoka", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+#font-select .select-menu li[data-value="bebas"],
+#select-layer [role="option"][data-value="bebas"] {
+  font-family: "Bebas Neue", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+#font-select .select-menu li[data-value="silkscreen"],
+#select-layer [role="option"][data-value="silkscreen"] {
+  font-family: "Silkscreen", ui-monospace, "Segoe UI", monospace;
+}
+
+#font-select .select-menu li[data-value="space-grotesk"],
+#select-layer [role="option"][data-value="space-grotesk"] {
+  font-family: "Space Grotesk", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+#font-select .select-menu li[data-value="anton"],
+#select-layer [role="option"][data-value="anton"] {
+  font-family: "Anton", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+#font-select .select-menu li[data-value="bangers"],
+#select-layer [role="option"][data-value="bangers"] {
+  font-family: "Bangers", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+#font-select .select-menu li[data-value="press-2p"],
+#select-layer [role="option"][data-value="press-2p"] {
+  font-family: "Press Start 2P", ui-monospace, "Segoe UI", monospace;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -121,10 +192,19 @@
 
 html {
   zoom: 1.25;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overflow: hidden;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 body {
   min-height: 100vh;
+  overflow: hidden;
   font-family: var(--font-base);
   color: var(--text);
   background:

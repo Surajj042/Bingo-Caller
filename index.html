@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@400;700;800&family=Righteous&family=Silkscreen:wght@400;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bebas+Neue&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@400;700;800&family=Press+Start+2P&family=Righteous&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
   />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -106,20 +106,24 @@
             <span>Font</span>
             <small>Typeface used throughout the app</small>
           </div>
-          <div class="select" id="font-select" data-option="system">
+          <div class="select" id="font-select" data-option="righteous">
             <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Font">
-              <span class="select-value">System</span>
+              <span class="select-value">Righteous</span>
               <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </button>
             <ul class="select-menu" role="listbox">
+              <li role="option" data-value="righteous" tabindex="-1">Righteous</li>
               <li role="option" data-value="system" tabindex="-1">System</li>
               <li role="option" data-value="orbitron" tabindex="-1">Orbitron</li>
-              <li role="option" data-value="righteous" tabindex="-1">Righteous</li>
               <li role="option" data-value="fredoka" tabindex="-1">Fredoka</li>
               <li role="option" data-value="bebas" tabindex="-1">Bebas Neue</li>
               <li role="option" data-value="silkscreen" tabindex="-1">Silkscreen</li>
+              <li role="option" data-value="space-grotesk" tabindex="-1">Space Grotesk</li>
+              <li role="option" data-value="anton" tabindex="-1">Anton</li>
+              <li role="option" data-value="bangers" tabindex="-1">Bangers</li>
+              <li role="option" data-value="press-2p" tabindex="-1">Press Start 2P</li>
             </ul>
           </div>
         </div>

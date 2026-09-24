@@ -41,7 +41,7 @@ const DEFAULT_SETTINGS = {
   spinEffect: "reel",
   spinSound: "ticks",
   theme: "ocean",
-  font: "system",
+  font: "righteous",
 };
 const SPIN_EFFECTS = [
   "numbers",
@@ -82,12 +82,16 @@ const THEMES = [
   "slate",
 ];
 const FONTS = [
+  "righteous",
   "system",
   "orbitron",
-  "righteous",
   "fredoka",
   "bebas",
   "silkscreen",
+  "space-grotesk",
+  "anton",
+  "bangers",
+  "press-2p",
 ];
 
 function loadSettings() {
