@@ -210,6 +210,33 @@
             </div>
           </div>
         </div>
+        <div class="setting-row">
+          <div class="setting-name">
+            <span>Announce number</span>
+            <small>Speak each drawn number aloud</small>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="announce-toggle" />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div id="voice-options" class="hidden">
+          <div class="setting-row setting-select">
+            <div class="setting-name">
+              <span>Voice</span>
+              <small>Which system voice reads the numbers</small>
+            </div>
+            <div class="select" id="voice-select" data-option="" data-open-up>
+              <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Voice">
+                <span class="select-value">System default</span>
+                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              <ul class="select-menu" role="listbox"></ul>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -228,7 +255,7 @@
       <button id="reset-btn" class="btn btn-secondary">Reset</button>
     </div>
 
-    <p class="hint">Space = generate &middot; R = reset &middot; Z = undo &middot; Y = redo &middot; C = celebrate &middot; F = fullscreen</p>
+    <p class="hint">Space = generate &middot; R = reset &middot; Z = undo &middot; Y = redo &middot; B = board &middot; C = celebrate &middot; F = fullscreen</p>
   </main>
 
   <div id="confirm-backdrop" class="confirm-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message" aria-hidden="true">

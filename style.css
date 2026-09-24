@@ -1258,13 +1258,11 @@ input[type="range"]::-moz-range-thumb {
 /* ---------- Presentation / Fullscreen ---------- */
 
 body.presenting .header,
-body.presenting #board-fab,
 body.presenting .settings-btn,
 body.presenting .controls,
 body.presenting .hint,
 body.presenting #select-layer,
-body.presenting .backdrop,
-body.presenting .board-wrap {
+body.presenting .settings-wrap {
   display: none;
 }
 
