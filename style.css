@@ -192,9 +192,17 @@
 
 html {
   zoom: 1.25;
+  --zoom: 1.25;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  overflow: hidden;
+  overflow: auto;
+}
+
+@media (max-width: 1023px) {
+  html {
+    zoom: 1;
+    --zoom: 1;
+  }
 }
 
 html::-webkit-scrollbar,
@@ -203,8 +211,8 @@ body::-webkit-scrollbar {
 }
 
 body {
-  min-height: 100vh;
-  overflow: hidden;
+  min-height: calc(100dvh / var(--zoom));
+  overflow: auto;
   font-family: var(--font-base);
   color: var(--text);
   background:
@@ -1174,10 +1182,70 @@ input[type="range"]::-moz-range-thumb {
   font-size: 0.8rem;
 }
 
+@media (max-width: 1023px) {
+  .app {
+    min-height: 100dvh;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .display-card {
+    width: min(420px, 100%);
+  }
+}
+
 @media (max-width: 480px) {
   .app {
-    gap: 22px;
-    padding-top: 24px;
+    gap: 20px;
+    padding: 20px 14px 40px;
+  }
+
+  .display-card {
+    padding: 22px 16px;
+  }
+
+  .current-number {
+    width: clamp(140px, 40vw, 180px);
+  }
+
+  .setting-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .select {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .setting-name small {
+    font-size: 0.75rem;
+  }
+
+  .board-wrap,
+  .settings-wrap {
+    padding: 16px;
+    width: min(560px, calc(100vw - 24px));
+  }
+
+  .history .chip {
+    width: 40px;
+    height: 30px;
+  }
+
+  .fab {
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .fs-btn {
+    left: 14px;
+    top: calc(14px + env(safe-area-inset-top));
+  }
+
+  .settings-btn {
+    right: 14px;
+    top: calc(14px + env(safe-area-inset-top));
   }
 
   .btn {
@@ -1349,7 +1417,8 @@ body.presenting .remaining {
     max-width: 100%;
     min-height: 100vh;
     min-height: 100dvh;
-    padding: clamp(72px, 12vh, 96px) 20px 20px;
+    padding: calc(clamp(72px, 12vh, 96px) + env(safe-area-inset-top)) 20px
+      calc(20px + env(safe-area-inset-bottom));
   }
 
   body.presenting .display-card {
