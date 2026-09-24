@@ -35,8 +35,6 @@ const soundSelect = document.getElementById("sound-select");
 const themeSelect = document.getElementById("theme-select");
 const fontSelect = document.getElementById("font-select");
 const announceToggle = document.getElementById("announce-toggle");
-const voiceOptions = document.getElementById("voice-options");
-const voiceSelect = document.getElementById("voice-select");
 const selectLayer = document.getElementById("select-layer");
 const layerMenu = selectLayer.querySelector(".select-layer-menu");
 
@@ -55,7 +53,6 @@ const DEFAULT_SETTINGS = {
   theme: "ocean",
   font: "righteous",
   announce: false,
-  voice: "",
 };
 const SPIN_EFFECTS = [
   "numbers",
@@ -127,9 +124,6 @@ function loadSettings() {
       }
       if (typeof parsed.announce !== "boolean") {
         parsed.announce = DEFAULT_SETTINGS.announce;
-      }
-      if (typeof parsed.voice !== "string") {
-        parsed.voice = DEFAULT_SETTINGS.voice;
       }
       return parsed;
     }
@@ -1077,43 +1071,13 @@ function updateSettingsUI() {
   setSelectValue(soundSelect, settings.spinSound);
   setSelectValue(themeSelect, settings.theme);
   setSelectValue(fontSelect, settings.font);
-  setSelectValue(voiceSelect, settings.voice);
   announceToggle.checked = settings.announce;
-  voiceOptions.classList.toggle("hidden", !settings.announce);
-}
-
-function populateVoices() {
-  const menu = voiceSelect.querySelector(".select-menu");
-  menu.replaceChildren();
-  const defaultOption = document.createElement("li");
-  defaultOption.setAttribute("role", "option");
-  defaultOption.dataset.value = "";
-  defaultOption.textContent = "System default";
-  defaultOption.tabIndex = -1;
-  menu.appendChild(defaultOption);
-  let voices = [];
-  if (hasSpeech) voices = window.speechSynthesis.getVoices();
-  for (const voice of voices) {
-    const option = document.createElement("li");
-    option.setAttribute("role", "option");
-    option.dataset.value = voice.voiceURI;
-    option.textContent = `${voice.name} (${voice.lang})`;
-    option.tabIndex = -1;
-    menu.appendChild(option);
-  }
-  setSelectValue(voiceSelect, settings.voice);
 }
 
 function announceNumber(number) {
   if (!settings.announce || !hasSpeech) return;
   if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(String(number));
-  const voices = window.speechSynthesis.getVoices();
-  let voice = null;
-  if (settings.voice) {
-    voice = voices.find((v) => v.voiceURI === settings.voice) || null;
-  }
-  if (voice) utterance.voice = voice;
   if (window.speechSynthesis.speaking) {
     // cancel() then speak() right away can drop the utterance in Chrome
     window.speechSynthesis.cancel();
@@ -1198,8 +1162,6 @@ layerMenu.addEventListener("click", (event) => {
   } else if (activeSelect.id === "font-select") {
     settings.font = option.dataset.value;
     applyFont();
-  } else if (activeSelect.id === "voice-select") {
-    settings.voice = option.dataset.value;
   }
   saveSettings();
   updateSettingsUI();
@@ -1230,13 +1192,8 @@ applyTheme();
 applyFont();
 updateSettingsUI();
 if (hasSpeech) {
-  if (window.speechSynthesis.addEventListener) {
-    window.speechSynthesis.addEventListener("voiceschanged", populateVoices);
-  }
-  populateVoices();
   if (settings.announce) primeSpeech();
 } else {
   announceToggle.disabled = true;
-  voiceOptions.classList.add("hidden");
 }
 if (!restoreGame()) resetGame();
