@@ -231,6 +231,12 @@ body {
   gap: 28px;
 }
 
+.hero {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 /* ---------- Header ---------- */
 
 .header {
@@ -1185,6 +1191,24 @@ input[type="range"]::-moz-range-thumb {
 @media (max-width: 1023px) {
   .app {
     min-height: 100dvh;
+    padding: 0 20px;
+  }
+
+  .hero {
+    min-height: 100dvh;
+    gap: 28px;
+    padding: 24px 0 40px;
+  }
+
+  .hero .display-card {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .hint {
+    display: none;
   }
 }
 
@@ -1197,7 +1221,12 @@ input[type="range"]::-moz-range-thumb {
 @media (max-width: 480px) {
   .app {
     gap: 20px;
-    padding: 20px 14px 40px;
+    padding: 0 14px 24px;
+  }
+
+  .hero {
+    gap: 20px;
+    padding: 20px 0 40px;
   }
 
   .display-card {
@@ -1205,7 +1234,7 @@ input[type="range"]::-moz-range-thumb {
   }
 
   .current-number {
-    width: clamp(140px, 40vw, 180px);
+    width: clamp(160px, 46vw, 220px);
   }
 
   .setting-row {
@@ -1260,22 +1289,14 @@ input[type="range"]::-moz-range-thumb {
     display: grid;
     grid-template-columns: 1fr minmax(380px, 2fr) 1fr;
     grid-template-areas:
-      "header    header   header"
-      "history-l display  history-r"
-      "history-l controls history-r"
-      "history-l hint     history-r";
+      "history-l hero history-r";
     align-items: start;
     column-gap: 28px;
   }
 
-  .header {
-    grid-area: header;
-  }
-
-  .display-card {
-    grid-area: display;
-    justify-self: center;
-    width: min(460px, 100%);
+  .hero {
+    grid-area: hero;
+    gap: 28px;
   }
 
   .history-left {
@@ -1287,12 +1308,9 @@ input[type="range"]::-moz-range-thumb {
     grid-area: history-r;
   }
 
-  .controls {
-    grid-area: controls;
-  }
-
-  .hint {
-    grid-area: hint;
+  .display-card {
+    justify-self: center;
+    width: min(460px, 100%);
   }
 
   .current-number {
@@ -1372,7 +1390,7 @@ body.presenting .remaining {
   body.presenting .app {
     display: grid;
     grid-template-columns: 1.15fr minmax(360px, 1.8fr) 1.15fr;
-    grid-template-areas: "history-l display history-r";
+    grid-template-areas: "history-l hero history-r";
     align-items: start;
     align-content: start;
     column-gap: clamp(24px, 3vw, 48px);
@@ -1419,6 +1437,14 @@ body.presenting .remaining {
     min-height: 100dvh;
     padding: calc(clamp(72px, 12vh, 96px) + env(safe-area-inset-top)) 20px
       calc(20px + env(safe-area-inset-bottom));
+  }
+
+  body.presenting .hero {
+    flex: none;
+    min-height: 0;
+    align-items: center;
+    gap: 0;
+    padding: 0;
   }
 
   body.presenting .display-card {
