@@ -11,7 +11,6 @@ const historyEls = [
 const remainingEl = document.getElementById("remaining");
 const statusEl = document.getElementById("status");
 const nextBtn = document.getElementById("next-btn");
-const undoBtn = document.getElementById("undo-btn");
 const resetBtn = document.getElementById("reset-btn");
 const confirmBackdrop = document.getElementById("confirm-backdrop");
 const confirmMessage = document.getElementById("confirm-message");
@@ -137,6 +136,7 @@ function saveSettings() {
 
 let shuffled = [];
 let drawnCount = 0;
+let redoUndone = null;
 
 const prefersReducedMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)"
@@ -187,7 +187,6 @@ function updateRemaining() {
 
 function updateControls() {
   nextBtn.disabled = spinActive || isGameOver();
-  undoBtn.disabled = spinActive || drawnCount === 0;
 }
 
 function lastDrawnNumber() {
@@ -198,7 +197,7 @@ function saveGame() {
   try {
     localStorage.setItem(
       GAME_KEY,
-      JSON.stringify({ shuffled, drawnCount })
+      JSON.stringify({ shuffled, drawnCount, redoUndone })
     );
   } catch (err) {
     // ignore storage failures
@@ -272,6 +271,12 @@ function restoreGame() {
       Math.max(0, Number(state.drawnCount) || 0),
       TOTAL_NUMBERS
     );
+    const drawnPrefix = new Set(list.slice(0, drawnCount));
+    const redo = Number(state.redoUndone) || null;
+    redoUndone =
+      redo && redo >= 1 && redo <= TOTAL_NUMBERS && !drawnPrefix.has(redo)
+        ? redo
+        : null;
     lastShownNumber = drawnCount > 0 ? shuffled[drawnCount - 1] : "\u2014";
     rebuildBoardState();
     return true;
@@ -285,6 +290,7 @@ function undoLastDraw() {
 
   const number = lastDrawnNumber();
   drawnCount--;
+  redoUndone = number;
   lastShownNumber = drawnCount > 0 ? shuffled[drawnCount - 1] : "\u2014";
 
   const cell = boardEl.querySelector(`[data-number="${number}"]`);
@@ -312,6 +318,13 @@ function undoLastDraw() {
   updateRemaining();
   updateControls();
   saveGame();
+}
+
+function redoLastUndo() {
+  if (spinActive || redoUndone === null) return;
+  const number = redoUndone;
+  redoUndone = null;
+  revealNumber(number);
 }
 
 function ensureAudio() {
@@ -508,6 +521,18 @@ function playFanfare() {
   if (!ctx) return;
 
   const t = ctx.currentTime;
+
+  const bass = ctx.createOscillator();
+  bass.type = "triangle";
+  bass.frequency.value = 130.81;
+  const bassGain = ctx.createGain();
+  bassGain.gain.setValueAtTime(0.0001, t);
+  bassGain.gain.exponentialRampToValueAtTime(0.3, t + 0.03);
+  bassGain.gain.exponentialRampToValueAtTime(0.0001, t + 1.2);
+  bass.connect(bassGain).connect(ctx.destination);
+  bass.start(t);
+  bass.stop(t + 1.25);
+
   [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
     const start = t + i * 0.12;
     const osc = ctx.createOscillator();
@@ -515,12 +540,26 @@ function playFanfare() {
     osc.type = "sine";
     osc.frequency.value = freq;
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(0.22, start + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.32, start + 0.03);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
     osc.connect(gain).connect(ctx.destination);
     osc.start(start);
     osc.stop(start + 0.55);
   });
+}
+
+let celebrateTimer = null;
+
+function celebrate() {
+  if (spinActive) return;
+  playFanfare();
+  currentNumberEl.classList.remove("celebrating");
+  void currentNumberEl.offsetWidth; // restart the pulse animation
+  currentNumberEl.classList.add("celebrating");
+  clearTimeout(celebrateTimer);
+  celebrateTimer = setTimeout(() => {
+    currentNumberEl.classList.remove("celebrating");
+  }, 6500);
 }
 
 function showCyclingNumber() {
@@ -559,7 +598,6 @@ function revealNumber(number) {
   if (isGameOver()) {
     currentNumberEl.classList.add("finished");
     statusEl.textContent = "All Numbers Drawn!";
-    playFanfare();
   } else {
     statusEl.textContent = "";
   }
@@ -674,6 +712,7 @@ function startSpin() {
 
 function drawNext() {
   if (spinActive || isGameOver()) return;
+  redoUndone = null;
   if (!settings.spinEnabled) {
     revealNumber(shuffled[drawnCount]);
     return;
@@ -685,6 +724,7 @@ function resetGame() {
   cancelSpin();
   shuffled = shuffle(Array.from({ length: TOTAL_NUMBERS }, (_, i) => i + 1));
   drawnCount = 0;
+  redoUndone = null;
   lastShownNumber = "\u2014";
 
   clearCurrentHighlight();
@@ -795,6 +835,17 @@ document.addEventListener("keydown", (event) => {
     !event.ctrlKey && !event.metaKey && !event.altKey
   ) {
     undoLastDraw();
+  } else if (
+    (event.key === "y" || event.key === "Y") &&
+    !event.ctrlKey && !event.metaKey && !event.altKey
+  ) {
+    redoLastUndo();
+  } else if (
+    (event.key === "c" || event.key === "C") &&
+    !event.ctrlKey && !event.metaKey && !event.altKey
+  ) {
+    event.preventDefault();
+    celebrate();
   } else if (
     (event.key === "f" || event.key === "F") &&
     !event.ctrlKey && !event.metaKey && !event.altKey
@@ -953,11 +1004,15 @@ function openSelect(select) {
 
   const menuHeight = layerMenu.offsetHeight;
   const gap = 8;
-  const spaceBelow = window.innerHeight - rect.bottom * layoutOffset;
-  if (spaceBelow >= menuHeight + gap) {
-    selectLayer.style.top = `${(rect.bottom + gap) * layoutOffset}px`;
-  } else {
+  if (select.hasAttribute("data-open-up")) {
     selectLayer.style.top = `${Math.max(gap, rect.top * layoutOffset - menuHeight - gap)}px`;
+  } else {
+    const spaceBelow = window.innerHeight - rect.bottom * layoutOffset;
+    if (spaceBelow >= menuHeight + gap) {
+      selectLayer.style.top = `${(rect.bottom + gap) * layoutOffset}px`;
+    } else {
+      selectLayer.style.top = `${Math.max(gap, rect.top * layoutOffset - menuHeight - gap)}px`;
+    }
   }
 }
 
@@ -998,7 +1053,6 @@ function updateSettingsUI() {
 
 nextBtn.addEventListener("click", drawNext);
 resetBtn.addEventListener("click", requestReset);
-undoBtn.addEventListener("click", undoLastDraw);
 currentNumberEl.addEventListener("click", drawNext);
 
 confirmResetBtn.addEventListener("click", confirmReset);

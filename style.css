@@ -303,7 +303,7 @@ body {
 
 .current-number.finished {
   cursor: default;
-  animation: finished-pulse 1.4s ease-in-out infinite;
+  filter: saturate(0.6) brightness(0.85);
 }
 
 @keyframes finished-pulse {
@@ -324,6 +324,14 @@ body {
 
 .current-number.pop {
   animation: pop 0.35s ease-out;
+}
+
+.current-number.celebrating {
+  cursor: default;
+  filter: saturate(1.1) brightness(1.05);
+  box-shadow: 0 0 0 8px rgba(var(--accent-rgb), 0.25),
+    0 18px 46px rgba(var(--accent-rgb), 0.55);
+  animation: finished-pulse 1.4s ease-in-out infinite;
 }
 
 @keyframes pop {

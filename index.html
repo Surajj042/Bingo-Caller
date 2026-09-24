@@ -162,7 +162,7 @@
               <span>Animation style</span>
               <small>How the ball animates while generating</small>
             </div>
-            <div class="select" id="effect-select" data-option="reel">
+            <div class="select" id="effect-select" data-option="reel" data-open-up>
               <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Animation style">
                 <span class="select-value">Slot reel</span>
                 <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -188,7 +188,7 @@
               <span>Spin sound</span>
               <small>Sound played during the spin</small>
             </div>
-            <div class="select" id="sound-select" data-option="ticks">
+            <div class="select" id="sound-select" data-option="ticks" data-open-up>
               <button type="button" class="select-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Spin sound">
                 <span class="select-value">Ticks only</span>
                 <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -225,11 +225,10 @@
 
     <div class="controls">
       <button id="next-btn" class="btn btn-primary">Generate</button>
-      <button id="undo-btn" class="btn btn-secondary" disabled>Undo</button>
       <button id="reset-btn" class="btn btn-secondary">Reset</button>
     </div>
 
-    <p class="hint">Space = generate &middot; R = reset &middot; Z = undo &middot; F = fullscreen &middot; or tap the ball</p>
+    <p class="hint">Space = generate &middot; R = reset &middot; Z = undo &middot; Y = redo &middot; C = celebrate &middot; F = fullscreen</p>
   </main>
 
   <div id="confirm-backdrop" class="confirm-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message" aria-hidden="true">
