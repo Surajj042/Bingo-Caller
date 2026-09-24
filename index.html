@@ -4,13 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bingo Number Caller</title>
+  <meta name="theme-color" content="#04202b" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Bingo" />
   <link rel="icon" type="image/png" href="favicon.png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bebas+Neue&family=Fredoka:wght@400;500;600;700&family=Orbitron:wght@400;700;800&family=Press+Start+2P&family=Righteous&family=Silkscreen:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-  />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="fonts/fonts.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -223,11 +225,23 @@
 
     <div class="controls">
       <button id="next-btn" class="btn btn-primary">Generate</button>
+      <button id="undo-btn" class="btn btn-secondary" disabled>Undo</button>
       <button id="reset-btn" class="btn btn-secondary">Reset</button>
     </div>
 
-    <p class="hint">Space = generate &middot; R = reset &middot; F = fullscreen &middot; or tap the ball</p>
+    <p class="hint">Space = generate &middot; R = reset &middot; Z = undo &middot; F = fullscreen &middot; or tap the ball</p>
   </main>
+
+  <div id="confirm-backdrop" class="confirm-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message" aria-hidden="true">
+    <div class="confirm-card">
+      <h2 id="confirm-title">Reset game?</h2>
+      <p id="confirm-message">Reset the game?</p>
+      <div class="confirm-actions">
+        <button type="button" id="confirm-cancel" class="btn btn-secondary">Cancel</button>
+        <button type="button" id="confirm-reset" class="btn btn-primary">Reset</button>
+      </div>
+    </div>
+  </div>
 
   <div id="select-layer" class="select-layer">
     <ul class="select-layer-menu" role="listbox"></ul>

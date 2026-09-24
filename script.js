@@ -11,7 +11,12 @@ const historyEls = [
 const remainingEl = document.getElementById("remaining");
 const statusEl = document.getElementById("status");
 const nextBtn = document.getElementById("next-btn");
+const undoBtn = document.getElementById("undo-btn");
 const resetBtn = document.getElementById("reset-btn");
+const confirmBackdrop = document.getElementById("confirm-backdrop");
+const confirmMessage = document.getElementById("confirm-message");
+const confirmResetBtn = document.getElementById("confirm-reset");
+const confirmCancelBtn = document.getElementById("confirm-cancel");
 const boardFab = document.getElementById("board-fab");
 const boardBackdrop = document.getElementById("board-backdrop");
 const boardCloseBtn = document.getElementById("board-close");
@@ -34,6 +39,7 @@ const selectLayer = document.getElementById("select-layer");
 const layerMenu = selectLayer.querySelector(".select-layer-menu");
 
 const SETTINGS_KEY = "bingo-settings";
+const GAME_KEY = "bingo-game";
 const DEFAULT_SETTINGS = {
   spinEnabled: true,
   minDuration: 5,
@@ -177,6 +183,135 @@ function clearCurrentHighlight() {
 
 function updateRemaining() {
   remainingEl.textContent = TOTAL_NUMBERS - drawnCount;
+}
+
+function updateControls() {
+  nextBtn.disabled = spinActive || isGameOver();
+  undoBtn.disabled = spinActive || drawnCount === 0;
+}
+
+function lastDrawnNumber() {
+  return drawnCount > 0 ? shuffled[drawnCount - 1] : null;
+}
+
+function saveGame() {
+  try {
+    localStorage.setItem(
+      GAME_KEY,
+      JSON.stringify({ shuffled, drawnCount })
+    );
+  } catch (err) {
+    // ignore storage failures
+  }
+}
+
+function clearSavedGame() {
+  try {
+    localStorage.removeItem(GAME_KEY);
+  } catch (err) {
+    // ignore storage failures
+  }
+}
+
+function rebuildBoardState() {
+  clearCurrentHighlight();
+  boardEl.querySelectorAll(".cell.drawn").forEach((cell) => {
+    cell.classList.remove("drawn");
+  });
+
+  for (const el of historyEls) el.replaceChildren();
+
+  if (drawnCount > 0) {
+    for (let i = 0; i < drawnCount; i++) {
+      const n = shuffled[i];
+      const cell = boardEl.querySelector(`[data-number="${n}"]`);
+      cell.classList.add("drawn");
+      if (i === drawnCount - 1) cell.classList.add("current");
+      for (const el of historyEls) {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = n;
+        el.prepend(chip);
+      }
+    }
+  }
+
+  currentNumberEl.classList.remove("pop", "finished");
+  currentNumberEl.textContent = lastShownNumber;
+  if (isGameOver()) currentNumberEl.classList.add("finished");
+
+  statusEl.textContent = isGameOver() ? "All Numbers Drawn!" : "";
+  updateRemaining();
+  updateControls();
+}
+
+function restoreGame() {
+  let raw = null;
+  try {
+    raw = localStorage.getItem(GAME_KEY);
+  } catch (err) {
+    return false;
+  }
+  if (!raw) return false;
+
+  try {
+    const state = JSON.parse(raw);
+    const list = state && Array.isArray(state.shuffled) ? state.shuffled : null;
+    if (!list || list.length !== TOTAL_NUMBERS) return false;
+
+    const seen = new Set();
+    for (const n of list) {
+      if (!Number.isInteger(n) || n < 1 || n > TOTAL_NUMBERS || seen.has(n)) {
+        return false;
+      }
+      seen.add(n);
+    }
+
+    shuffled = list;
+    drawnCount = Math.min(
+      Math.max(0, Number(state.drawnCount) || 0),
+      TOTAL_NUMBERS
+    );
+    lastShownNumber = drawnCount > 0 ? shuffled[drawnCount - 1] : "\u2014";
+    rebuildBoardState();
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function undoLastDraw() {
+  if (spinActive || drawnCount === 0) return;
+
+  const number = lastDrawnNumber();
+  drawnCount--;
+  lastShownNumber = drawnCount > 0 ? shuffled[drawnCount - 1] : "\u2014";
+
+  const cell = boardEl.querySelector(`[data-number="${number}"]`);
+  if (cell) cell.classList.remove("drawn", "current");
+
+  for (const el of historyEls) {
+    const chip = el.querySelector(".chip");
+    if (chip) chip.remove();
+  }
+
+  currentNumberEl.classList.remove("pop", "finished");
+  void currentNumberEl.offsetWidth; // restart the pop animation
+  currentNumberEl.textContent = lastShownNumber;
+  currentNumberEl.classList.add("pop");
+
+  clearCurrentHighlight();
+  if (drawnCount > 0) {
+    const prevCell = boardEl.querySelector(
+      `[data-number="${shuffled[drawnCount - 1]}"]`
+    );
+    if (prevCell) prevCell.classList.add("current");
+  }
+
+  statusEl.textContent = isGameOver() ? "All Numbers Drawn!" : "";
+  updateRemaining();
+  updateControls();
+  saveGame();
 }
 
 function ensureAudio() {
@@ -368,6 +503,26 @@ function playReveal() {
   });
 }
 
+function playFanfare() {
+  const ctx = ensureAudio();
+  if (!ctx) return;
+
+  const t = ctx.currentTime;
+  [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+    const start = t + i * 0.12;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.22, start + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + 0.55);
+  });
+}
+
 function showCyclingNumber() {
   let n;
   do {
@@ -402,10 +557,14 @@ function revealNumber(number) {
   updateRemaining();
 
   if (isGameOver()) {
-    nextBtn.disabled = true;
     currentNumberEl.classList.add("finished");
     statusEl.textContent = "All Numbers Drawn!";
+    playFanfare();
+  } else {
+    statusEl.textContent = "";
   }
+  updateControls();
+  saveGame();
 }
 
 function getActiveEffect() {
@@ -441,7 +600,7 @@ function finishSpinCleanup() {
   currentNumberEl.classList.remove("spinning");
   clearSpinEffects();
   document.body.classList.remove("is-spinning");
-  nextBtn.disabled = isGameOver();
+  updateControls();
   if (!isGameOver()) statusEl.textContent = "";
 }
 
@@ -467,7 +626,7 @@ function startSpin() {
   if (spinActive || isGameOver()) return;
 
   spinActive = true;
-  nextBtn.disabled = true;
+  updateControls();
   currentNumberEl.classList.remove("pop");
   currentNumberEl.classList.add("spinning");
   applySpinEffect();
@@ -541,7 +700,35 @@ function resetGame() {
   statusEl.textContent = "";
   updateRemaining();
 
-  nextBtn.disabled = false;
+  updateControls();
+  clearSavedGame();
+}
+
+let confirmPending = false;
+
+function requestReset() {
+  if (confirmPending || spinActive) return;
+  if (drawnCount === 0) {
+    resetGame();
+    return;
+  }
+  confirmPending = true;
+  confirmMessage.textContent = `Reset the game and lose ${drawnCount} drawn number${drawnCount === 1 ? "" : "s"}?`;
+  confirmBackdrop.classList.add("open");
+  confirmBackdrop.setAttribute("aria-hidden", "false");
+  confirmResetBtn.focus();
+}
+
+function closeResetConfirm() {
+  confirmPending = false;
+  confirmBackdrop.classList.remove("open");
+  confirmBackdrop.setAttribute("aria-hidden", "true");
+}
+
+function confirmReset() {
+  if (!confirmPending) return;
+  closeResetConfirm();
+  resetGame();
 }
 
 const anySelectOpen = () =>
@@ -602,7 +789,12 @@ document.addEventListener("keydown", (event) => {
     (event.key === "r" || event.key === "R") &&
     !event.ctrlKey && !event.metaKey && !event.altKey
   ) {
-    resetGame();
+    requestReset();
+  } else if (
+    (event.key === "z" || event.key === "Z") &&
+    !event.ctrlKey && !event.metaKey && !event.altKey
+  ) {
+    undoLastDraw();
   } else if (
     (event.key === "f" || event.key === "F") &&
     !event.ctrlKey && !event.metaKey && !event.altKey
@@ -610,6 +802,10 @@ document.addEventListener("keydown", (event) => {
     event.preventDefault();
     toggleFullscreen();
   } else if (event.key === "Escape") {
+    if (confirmPending) {
+      closeResetConfirm();
+      return;
+    }
     setBoardOpen(false);
     setSettingsOpen(false);
   }
@@ -801,8 +997,15 @@ function updateSettingsUI() {
 }
 
 nextBtn.addEventListener("click", drawNext);
-resetBtn.addEventListener("click", resetGame);
+resetBtn.addEventListener("click", requestReset);
+undoBtn.addEventListener("click", undoLastDraw);
 currentNumberEl.addEventListener("click", drawNext);
+
+confirmResetBtn.addEventListener("click", confirmReset);
+confirmCancelBtn.addEventListener("click", closeResetConfirm);
+confirmBackdrop.addEventListener("click", (event) => {
+  if (event.target === confirmBackdrop) closeResetConfirm();
+});
 
 boardFab.addEventListener("click", () => setBoardOpen(!isBoardOpen()));
 boardCloseBtn.addEventListener("click", () => setBoardOpen(false));
@@ -877,4 +1080,4 @@ buildBoard();
 applyTheme();
 applyFont();
 updateSettingsUI();
-resetGame();
+if (!restoreGame()) resetGame();

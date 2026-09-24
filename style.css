@@ -303,7 +303,23 @@ body {
 
 .current-number.finished {
   cursor: default;
-  filter: saturate(0.6) brightness(0.85);
+  animation: finished-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes finished-pulse {
+  0%,
+  100% {
+    filter: saturate(1);
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(var(--accent-rgb), 0.15),
+      0 14px 34px rgba(var(--accent-rgb), 0.35);
+  }
+  50% {
+    filter: saturate(1.15) brightness(1.05);
+    transform: scale(1.03);
+    box-shadow: 0 0 0 12px rgba(var(--accent-rgb), 0.3),
+      0 18px 46px rgba(var(--accent-rgb), 0.6);
+  }
 }
 
 .current-number.pop {
@@ -1086,6 +1102,62 @@ input[type="range"]::-moz-range-thumb {
 .btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.confirm-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.confirm-card {
+  width: min(380px, 100%);
+  padding: 26px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--bg-2), var(--bg-1));
+  border: 1px solid var(--card-border);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.confirm-card h2 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--text);
+}
+
+.confirm-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+.confirm-actions .btn {
+  padding: 12px 26px;
 }
 
 .hint {
